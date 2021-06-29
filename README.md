@@ -8,4 +8,4 @@ Open source optimization program for Windows.
 *.NET Framework +2.0*
 <br />
 
-Edited version of CleanerX for gaming.
+Edited version of [CleanerX](https://github.com/obirninja-lab/CleanerX) for gaming.
