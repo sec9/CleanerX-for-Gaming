@@ -181,6 +181,7 @@ namespace CleanerX
                 }
                 catch { }
             }
+            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -389,11 +390,12 @@ namespace CleanerX
                 timer2.Stop();
                 this.Hide();
                 this.ShowInTaskbar = false;
-                notifyIcon1.Text = "Minimized";
+                notifyIcon1.BalloonTipText = "Minimized";
                 notifyIcon1.ShowBalloonTip(3000);
             }
             else
             {
+                this.ShowInTaskbar = true;
                 GraphUpdate();
                 timer2.Start();
             }

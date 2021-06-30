@@ -186,9 +186,9 @@ namespace CleanerX
             this.metroLabel4.FontSize = MetroFramework.MetroLabelSize.Small;
             this.metroLabel4.Location = new System.Drawing.Point(254, 206);
             this.metroLabel4.Name = "metroLabel4";
-            this.metroLabel4.Size = new System.Drawing.Size(55, 15);
+            this.metroLabel4.Size = new System.Drawing.Size(57, 15);
             this.metroLabel4.TabIndex = 13;
-            this.metroLabel4.Text = "version0.1";
+            this.metroLabel4.Text = "version0.2";
             this.metroLabel4.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // Main
