@@ -342,43 +342,41 @@ namespace CleanerX
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            if (!backgroundWorker1.IsBusy)
+            Process[] process = Process.GetProcesses();
+            foreach (Process p in process) try { EmptyWorkingSet(p.Handle); } catch { }
+            DirectoryInfo directory = new DirectoryInfo(Path.GetTempPath());
+            foreach (FileInfo file in directory.GetFiles())
             {
-                backgroundWorker1.RunWorkerAsync();
-                DirectoryInfo directory = new DirectoryInfo(Path.GetTempPath());
-                foreach (FileInfo file in directory.GetFiles())
+                try
                 {
-                    try
-                    {
-                        file.Delete();
-                    }
-                    catch { }
+                    file.Delete();
                 }
-                foreach (DirectoryInfo dir in directory.GetDirectories())
+                catch { }
+            }
+            foreach (DirectoryInfo dir in directory.GetDirectories())
+            {
+                try
                 {
-                    try
-                    {
-                        dir.Delete(true);
-                    }
-                    catch { }
+                    dir.Delete(true);
                 }
-                directory = new DirectoryInfo(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine));
-                foreach (FileInfo file in directory.GetFiles())
+                catch { }
+            }
+            directory = new DirectoryInfo(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine));
+            foreach (FileInfo file in directory.GetFiles())
+            {
+                try
                 {
-                    try
-                    {
-                        file.Delete();
-                    }
-                    catch { }
+                    file.Delete();
                 }
-                foreach (DirectoryInfo dir in directory.GetDirectories())
+                catch { }
+            }
+            foreach (DirectoryInfo dir in directory.GetDirectories())
+            {
+                try
                 {
-                    try
-                    {
-                        dir.Delete(true);
-                    }
-                    catch { }
+                    dir.Delete(true);
                 }
+                catch { }
             }
             metroButton1.Enabled = false;
         }
