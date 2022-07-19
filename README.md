@@ -8,6 +8,6 @@ Open source optimization program for Windows.
 *.NET Framework +2.0*
 <br />
 
-<img src="https://cdn.discordapp.com/attachments/489752132065558538/859813669482659901/Untitled-1.png">
+<img src="https://www.upload.ee/image/14339069/cleanerx.png">
 
 Edited version of [CleanerX](https://github.com/obirninja-lab/CleanerX) for gaming.
