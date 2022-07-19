@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace CleanerX
 {
-    public partial class Main : MetroFramework.Forms.MetroForm
+    public partial class Main : Form
     {
         [DllImport("psapi")]
         public static extern int EmptyWorkingSet(IntPtr handle);
@@ -49,12 +49,15 @@ namespace CleanerX
                 ((DoesWin32MethodExist("kernel32.dll", "IsWow64Process") &&
                 IsWow64Process(GetCurrentProcess(), out flag)) && flag);
         }
+
+        int fMove;
+        int fMouse_X;
+        int fMouse_Y;
         public Main()
         {
             InitializeComponent();
             if (Process.GetProcessesByName("CleanerX").Length > 1) Environment.Exit(0);
             RegistryKey key;
-            ServiceController controller;
             key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\CleanerXGaming", true);
             if (key == null)
             {
@@ -93,94 +96,7 @@ namespace CleanerX
                 }
                 catch { }
             }
-            try
-            {
-                controller = new ServiceController("XblAuthManager");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("XblGameSave");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("XboxGip");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("XboxGipSvc");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("XboxNetApiSvc");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("edgeupdate");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("edgeupdatem");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("wuauserv");
-                controller.Stop();
-            }
-            catch { }
-            try
-            {
-                controller = new ServiceController("WaaSMedicSvc");
-                controller.Stop();
-            }
-            catch { }
-            DirectoryInfo directory = new DirectoryInfo(Path.GetTempPath());
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                try
-                {
-                    file.Delete();
-                }
-                catch { }
-            }
-            foreach (DirectoryInfo dir in directory.GetDirectories())
-            {
-                try
-                {
-                    dir.Delete(true);
-                }
-                catch { }
-            }
-            directory = new DirectoryInfo(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine));
-            foreach (FileInfo file in directory.GetFiles())
-            {
-                try
-                {
-                    file.Delete();
-                }
-                catch { }
-            }
-            foreach (DirectoryInfo dir in directory.GetDirectories())
-            {
-                try
-                {
-                    dir.Delete(true);
-                }
-                catch { }
-            }
+            Functions.killProcesses();
             if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
         }
 
@@ -205,8 +121,8 @@ namespace CleanerX
         private void Main_Load(object sender, EventArgs e)
         {
             RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\CleanerXGaming", true);
-            metroComboBox1.SelectedIndex = metroComboBox1.FindStringExact(key.GetValue("RAM") + "%");
-            metroComboBox2.SelectedIndex = metroComboBox2.FindStringExact(key.GetValue("timer") + "");
+            comboBox1.SelectedIndex = comboBox1.FindStringExact(key.GetValue("RAM") + "%");
+            comboBox2.SelectedIndex = comboBox2.FindStringExact(key.GetValue("timer") + "");
             key.Close();
             GraphUpdate();
             this.WindowState = FormWindowState.Normal;
@@ -228,10 +144,71 @@ namespace CleanerX
             this.WindowState = FormWindowState.Normal;
         }
 
-        private void metroComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            GraphUpdate();
+            if (button1.Enabled == false) button1.Enabled = true;
+        }
+
+        private void GraphUpdate()
+        {
+            Int64 phav = PerformanceInfo.GetPhysicalAvailableMemoryInMiB();
+            Int64 tot = PerformanceInfo.GetTotalMemoryInMiB();
+            decimal percentFree = ((decimal)phav / (decimal)tot) * 100;
+            decimal percentOccupied = 100 - percentFree;
+            progressBar1.Value = Convert.ToInt32(Math.Round(percentOccupied));
+            label8.Text = "RAM usage (" + Convert.ToInt32(Math.Round(percentOccupied)) + "%)";
+        }
+
+        private void Main_Resize(object sender, EventArgs e)
+        {
+            if(this.WindowState == FormWindowState.Minimized)
+            {
+                timer2.Stop();
+                this.Hide();
+                this.ShowInTaskbar = false;
+                notifyIcon1.BalloonTipText = "Minimized";
+                notifyIcon1.ShowBalloonTip(3000);
+            }
+            else
+            {
+                this.ShowInTaskbar = true;
+                GraphUpdate();
+                timer2.Start();
+            }
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            fMove = 0;
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (fMove == 1)
+            {
+                this.SetDesktopLocation(MousePosition.X - fMouse_X, MousePosition.Y - fMouse_Y);
+            }
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            fMove = 1;
+            fMouse_X = e.X;
+            fMouse_Y = e.Y;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\CleanerXGaming", true);
-            switch (metroComboBox1.SelectedIndex)
+            switch (comboBox1.SelectedIndex)
             {
                 case 0:
                     key.SetValue("RAM", "20");
@@ -283,10 +260,10 @@ namespace CleanerX
             key.Close();
         }
 
-        private void metroComboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             RegistryKey key = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\CleanerXGaming", true);
-            switch (metroComboBox2.SelectedIndex)
+            switch (comboBox2.SelectedIndex)
             {
                 case 0:
                     key.SetValue("timer", "15");
@@ -324,23 +301,7 @@ namespace CleanerX
             key.Close();
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            GraphUpdate();
-            if (metroButton1.Enabled == false) metroButton1.Enabled = true;
-        }
-
-        private void GraphUpdate()
-        {
-            Int64 phav = PerformanceInfo.GetPhysicalAvailableMemoryInMiB();
-            Int64 tot = PerformanceInfo.GetTotalMemoryInMiB();
-            decimal percentFree = ((decimal)phav / (decimal)tot) * 100;
-            decimal percentOccupied = 100 - percentFree;
-            metroProgressBar1.Value = Convert.ToInt32(Math.Round(percentOccupied));
-            metroLabel3.Text = "RAM usage (" + Convert.ToInt32(Math.Round(percentOccupied)) + "%)";
-        }
-
-        private void metroButton1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             Process[] process = Process.GetProcesses();
             foreach (Process p in process) try { EmptyWorkingSet(p.Handle); } catch { }
@@ -378,32 +339,27 @@ namespace CleanerX
                 }
                 catch { }
             }
-            metroButton1.Enabled = false;
+            button1.Enabled = false;
         }
 
-        private void Main_Resize(object sender, EventArgs e)
+        private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if(this.WindowState == FormWindowState.Minimized)
-            {
-                timer2.Stop();
-                this.Hide();
-                this.ShowInTaskbar = false;
-                notifyIcon1.BalloonTipText = "Minimized";
-                notifyIcon1.ShowBalloonTip(3000);
-            }
-            else
-            {
-                this.ShowInTaskbar = true;
-                GraphUpdate();
-                timer2.Start();
-            }
+            Process.Start("https://sec-nine.com");
         }
 
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        private void label1_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://sec-nine.com");
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-            this.Show();
-            this.WindowState = FormWindowState.Normal;
         }
     }
     public static class PerformanceInfo
