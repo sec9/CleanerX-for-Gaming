@@ -5,7 +5,7 @@
 Open source optimization program for Windows.
 
 <img src="https://www.upload.ee/image/14339069/cleanerx.png">
-
+<hr>
 **Requirements:**<br />
 *.NET Framework +2.0*
 <br />
