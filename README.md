@@ -11,8 +11,8 @@ Open source optimization program for Windows.
 
 # Before & After
 
-[![cleanerx](https://cdn.discordapp.com/attachments/760506877804806204/830031719272808458/ss1.png)](https://cdn.discordapp.com/attachments/760506877804806204/830031719272808458/ss1.png)<br />
+[![cleanerx](https://cdn.discordapp.com/attachments/995833848359305266/998751254324969552/unknown.png)](https://cdn.discordapp.com/attachments/995833848359305266/998751254324969552/unknown.png)<br />
 
-[![cleanerx](https://cdn.discordapp.com/attachments/760506877804806204/830031724842450954/ss2.png)](https://cdn.discordapp.com/attachments/760506877804806204/830031724842450954/ss2.png)
+[![cleanerx](https://cdn.discordapp.com/attachments/995833848359305266/998751270766653461/unknown.png)](https://cdn.discordapp.com/attachments/995833848359305266/998751270766653461/unknown.png)
 
 Edited version of [CleanerX](https://github.com/obirninja-lab/CleanerX) for gaming.
